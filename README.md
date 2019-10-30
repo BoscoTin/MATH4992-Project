@@ -32,7 +32,11 @@ This week: Implement Crawler, design math formula on efficiency approach
 
 ### Instruction to Andy
 Install BeautifulSoup and Requests for your python using pip, or else you cannot run.
+
 Follow the commands here:
+
 `sudo easy_install pip`
+
 `sudo pip install bs4`
+
 `sudo pip install requests`
