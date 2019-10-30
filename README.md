@@ -28,6 +28,7 @@ Tentative approaches:
 
 ### Schedule
 This week: Implement Crawler, design math formula on efficiency approach
+
 ---
 
 ### Instruction to Andy
