@@ -17,12 +17,22 @@ Tentative approaches:
 2. Linear algebra
 3. Probabilistic point of view
 ---
+
 ### Components
 1. Crawler to scrape the raw data from given webpages
 2. Database management system to store the data (divide into several parts to fit different methods)
 3. Reducer to work around with the data and calculate the values
 4. Retriever to retrieve the values
 5. Interface
+---
 
 ### Schedule
 This week: Implement Crawler, design math formula on efficiency approach
+---
+
+### Instruction to Andy
+Install BeautifulSoup and Requests for your python using pip, or else you cannot run.
+Follow the commands here:
+`sudo easy_install pip`
+`sudo pip install bs4`
+`sudo pip install requests`
