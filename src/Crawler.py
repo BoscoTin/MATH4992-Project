@@ -2,7 +2,7 @@ import requests
 import sys
 import re
 from bs4 import BeautifulSoup
-
+import Processor
 
 
 class Crawler:
@@ -36,9 +36,10 @@ class Crawler:
                 for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
                     children.append(link.get('href'))
 
+                children = Processor.process(children)
                 for link in children:
                     print "{}".format(link)
-
+# Class Crawler ends
 
 # exit function
 def terminate():
