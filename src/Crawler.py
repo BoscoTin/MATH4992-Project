@@ -1,6 +1,7 @@
 import requests
 import sys
 import re
+import threading
 from bs4 import BeautifulSoup
 import Processor
 
@@ -10,35 +11,50 @@ class Crawler:
     def __init__(self, numOfLayer):
         self.num = numOfLayer;
         self.parent = []
-        self.child = []
+        self.children = []
 
         link = "https://www.cse.ust.hk/ug/comp1991"
 
         self.parent.append(link)
 
+    def getOnePage(self):
+        link = self.parent.pop(0)
+        request = requests.get(link)
+
+        # check if the page can be connected successfully
+        if request.status_code == requests.codes.ok:
+            soup = BeautifulSoup(request.text, 'html.parser')
+
+        # print(soup.get_text())
+
+        # get all child links from the site
+        children = []
+        for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
+            children.append(link.get('href'))
+
+        children = Processor.process(children)
+        for link in children:
+            print "{}".format(link)
+            self.children.append(link)
+
+
+    # search by BFS
     def scrape(self):
         for i in range(self.num):
             print "Searching layer {}".format(i)
 
-            while(len(self.parent) != 0):
-                link = self.parent.pop(0)
+            # clear duplicate brought by multithread
+            self.parent = Processor.process(self.parent)
 
-                request = requests.get(link)
+            if (len(self.parent) == 0):
+                break
 
-                # check if the page can be connected successfully
-                if request.status_code == requests.codes.ok:
-                    soup = BeautifulSoup(request.text, 'html.parser')
+            for i in range(len(self.parent)):
+                self.getOnePage()
 
-                # print(soup.get_text())
+            self.parent = self.children
+            self.children = []
 
-                # get all child links from the site
-                children = []
-                for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
-                    children.append(link.get('href'))
-
-                children = Processor.process(children)
-                for link in children:
-                    print "{}".format(link)
 # Class Crawler ends
 
 # exit function
