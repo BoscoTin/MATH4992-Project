@@ -54,22 +54,21 @@ class Crawler:
 
             self.parent = self.children
             self.children = []
-
 # Class Crawler ends
 
 # exit function
 def terminate():
     print "To run Crawler, type python [path]/Crawler.py [control] [parameter]... in your terminal"
     print "Parameter List:"
-    print "-numOfLayer [integer] : define number of child link explored by the Crawler"
+    print "-n [integer] : define number of child link explored by the Crawler"
     sys.exit()
 
 # main function is here
 def main():
     argv = sys.argv
     numOfLayer = 0
-    if "-numOfLayer" in argv:
-        index = argv.index("-numOfLayer")
+    if "-n" in argv:
+        index = argv.index("-n")
         if(str.isdigit(argv[index + 1])):
             numOfLayer = int(argv[index + 1])
         else:
