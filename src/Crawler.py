@@ -1,9 +1,7 @@
-import requests
-import sys
-import re
-import threading
+import requests, sys, re, string
 from bs4 import BeautifulSoup
 import Processor
+import Indexer
 
 
 class Crawler:
@@ -19,32 +17,48 @@ class Crawler:
 
     def getOnePage(self):
         link = self.parent.pop(0)
+        print ""
+        print "Searching {}".format(link)
         request = requests.get(link)
 
         # check if the page can be connected successfully
         if request.status_code == requests.codes.ok:
             soup = BeautifulSoup(request.text, 'html.parser')
 
-        # print(soup.get_text())
+        # get raw text and split it
+        rawtags = soup.find_all('p')
+        temp = []
+        for tag in rawtags:
+            temp = temp + tag.getText().split()
+
+        words = []
+        for word in temp:
+            rawtext = word.encode('utf-8').strip()
+            for c in string.punctuation:
+                rawtext = rawtext.replace(c, " ")
+            words += rawtext.split()
 
         # get all child links from the site
         children = []
         for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
             children.append(link.get('href'))
 
-        children = Processor.process(children)
+        #children = Processor.process(children)
         for link in children:
             print "{}".format(link)
             self.children.append(link)
 
+        # give the data to indexer
+        Indexer.process(link, words, children)
 
     # search by BFS
     def scrape(self):
         for i in range(self.num):
+            print ""
             print "Searching layer {}".format(i)
 
             # clear duplicate brought by multithread
-            self.parent = Processor.process(self.parent)
+            #self.parent = Processor.process(self.parent)
 
             if (len(self.parent) == 0):
                 break
