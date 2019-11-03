@@ -16,10 +16,10 @@ class Crawler:
         self.parent.append(link)
 
     def getOnePage(self):
-        link = self.parent.pop(0)
+        parent = self.parent.pop(0)
         print ""
-        print "Searching {}".format(link)
-        request = requests.get(link)
+        print "Searching {}".format(parent)
+        request = requests.get(parent)
 
         # check if the page can be connected successfully
         if request.status_code == requests.codes.ok:
@@ -45,12 +45,12 @@ class Crawler:
             children.append(link.get('href'))
 
         #children = Processor.process(children)
-        for link in children:
-            print "{}".format(link)
-            self.children.append(link)
+        for child in children:
+            print "{}".format(child)
+            self.children.append(child)
 
         # give the data to indexer
-        Indexer.process(link, words, children)
+        Indexer.process(parent, words, children)
 
     # search by BFS
     def scrape(self):
