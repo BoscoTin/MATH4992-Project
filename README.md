@@ -19,15 +19,15 @@ Tentative approaches:
 ---
 
 ### Components
-1. Crawler to scrape the raw data from given webpages
-2. Database management system to store the data (divide into several parts to fit different methods)
-3. Reducer to work around with the data and calculate the values
-4. Retriever to retrieve the values
-5. Interface
+1. Crawler to scrape the raw data from given webpages (90% completed)
+2. Database management system to store the data (divide into several parts to fit different methods) (90% completed)
+3. Ranker to work around with the data and calculate the values (20% completed)
+4. Retriever to retrieve the values (10% completed)
+5. Interface (0% completed)
 ---
 
 ### Schedule
-This week: Implement Crawler, design math formula on efficiency approach
+This week: Implement Retriever and Ranker, investigate LSI, word movers and variational auto encoder
 
 ---
 
@@ -41,3 +41,18 @@ Follow the commands here:
 `sudo pip install bs4`
 
 `sudo pip install requests`
+
+As our program use MongoDB to store the website data, please install the following dependency to prevent the error happens
+
+`sudo pip install mongodb`
+
+Homebrew dependency:
+`brew install mongodb-community`
+
+then
+
+`mkdir -p /data/db`
+
+``sudo chown -R `id -un` /data/db``
+
+run `mongod` to open MongoDB

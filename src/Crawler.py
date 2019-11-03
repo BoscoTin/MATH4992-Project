@@ -1,7 +1,7 @@
 import requests, sys, re, string
 from bs4 import BeautifulSoup
 import Processor
-import Indexer
+from Indexer import Indexer
 
 
 class Crawler:
@@ -10,16 +10,17 @@ class Crawler:
         self.num = numOfLayer;
         self.parent = []
         self.children = []
+        self.Indexer = Indexer()
 
-        link = "https://www.cse.ust.hk/ug/comp1991"
+        link = "http://www.cse.ust.hk/"
 
         self.parent.append(link)
 
     def getOnePage(self):
-        link = self.parent.pop(0)
+        parent = self.parent.pop(0)
         print ""
-        print "Searching {}".format(link)
-        request = requests.get(link)
+        print "Searching {}".format(parent)
+        request = requests.get(parent)
 
         # check if the page can be connected successfully
         if request.status_code == requests.codes.ok:
@@ -31,6 +32,7 @@ class Crawler:
         for tag in rawtags:
             temp = temp + tag.getText().split()
 
+        # replace punctuation by white space and split
         words = []
         for word in temp:
             rawtext = word.encode('utf-8').strip()
@@ -44,12 +46,12 @@ class Crawler:
             children.append(link.get('href'))
 
         #children = Processor.process(children)
-        for link in children:
-            print "{}".format(link)
-            self.children.append(link)
+        for child in children:
+            print "{}".format(child)
+            self.children.append(child)
 
         # give the data to indexer
-        Indexer.process(link, words, children)
+        self.Indexer.process(parent, words, children)
 
     # search by BFS
     def scrape(self):
