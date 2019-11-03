@@ -4,7 +4,7 @@ class Processor:
         i = 0
         while i < len(links):
             if links[i][0:5] == "https":
-                links[i].replace("https", "http")
+                links[i] = "http" + links[i][5:]
             i += 1
         return links
 
@@ -13,15 +13,9 @@ class Processor:
         processedLinks = []
         i = 0
         while i < len(links):
-            j = 0
-            count = 0
-            while j < len(links[i]):
-                if links[i][j:j+1] == "/" and count == 2:
-                    if links[i][j - 7:j] == "ust.hk/":
-                        processedLinks.append(links[i])
-                elif links[i][j:j+1] == "/" and count < 2:
-                    count += 1
-                    j += 1
+            if "ust.hk" in links[i]:
+                processedLinks.append(links[i])
+            i += 1
         return processedLinks
 
     def clearSubfix(self, links):
@@ -31,20 +25,13 @@ class Processor:
         processedLinks = []
         i = 0
         while i < len(links):
-            j = 0
-            count = 0
-            while j < len(links[i]):
-                if links[i][j:j + 1] == "/" and count == 2:
-                    if len(links[i]) == (j + 11) and links[i][j:j + 11] == "/index.html":
-                        processedLinks[i].append(links[i][0:j - 1])
-                    elif len(links[i]) == (j + 2) and links[i][j:j + 2] == "/#":
-                        processedLinks[i].append(links[i][0:j - 1])
-                    elif len(links[i]) == (j + 1) and links[i][j:j + 1] == "/":
-                        processedLinks[i].append(links[i][0:j - 1])
-                elif links[i][j:j + 1] == "/" and count < 2:
-                    count += 1
-                    j += 1
-            processedLinks[i].append(links[i])
+            if "index.html" in links[i]:
+                links[i].replace("/index.html", "")
+            elif "/#" in links[i]:
+                links[i].replace("/#", "")
+            elif "/" in links[i]:
+                links[i].replace("/", "")
+            processedLinks.append(links[i])
             i += 1
         return processedLinks
 
@@ -53,10 +40,7 @@ class Processor:
         processedLinks = []
         i = 0
         while i < len(links):
-            temp = len(links[i]) - 4
-            if links[i][temp:temp + 3] != ".pdf" or \
-                    links[i][temp:temp + 3] != ".png" or \
-                    links[i][temp:temp + 3] != ".jpg":
+            if ".pdf" not in links[i] and ".png" not in links[i] and ".jpg" not in links[i]:
                 processedLinks.append(links[i])
             i += 1
         return processedLinks
