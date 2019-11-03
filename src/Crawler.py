@@ -1,7 +1,7 @@
 import requests, sys, re, string
 from bs4 import BeautifulSoup
 import Processor
-import Indexer
+from Indexer import Indexer
 
 
 class Crawler:
@@ -10,6 +10,7 @@ class Crawler:
         self.num = numOfLayer;
         self.parent = []
         self.children = []
+        self.Indexer = Indexer()
 
         link = "http://www.cse.ust.hk/"
 
@@ -50,7 +51,7 @@ class Crawler:
             self.children.append(child)
 
         # give the data to indexer
-        Indexer.process(parent, words, children)
+        self.Indexer.process(parent, words, children)
 
     # search by BFS
     def scrape(self):

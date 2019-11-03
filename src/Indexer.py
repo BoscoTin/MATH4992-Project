@@ -2,15 +2,22 @@ import math
 import DBManager
 
 class Indexer:
-    # TODO: get database db here
     def __init__(self):
         self.wordcountdb = DBManager.instance('wordcount')
         self.PRmatrixdb = DBManager.instance('PRMatrix')
 
-    def saveData(self, link, wordcount, cossim, jaccardsim):
+    # main program here
+    def process(self, parentLink, words, childLinks):
+        # count the number of words here
+        wordCountMap = self.wordCount(words)
+
+        # pre-calculate the stuffs that independent of query
+        cossim = self.preprocessCosSim(wordCountMap)
+        jaccardsim = self.preprocessJaccardSim(wordCountMap)
+
         self.wordcountdb.insert({
-            'url': link,
-            #'words': wordcount,
+            'url': parentLink,
+            'words': wordCountMap,
             'cos': cossim,
             'jaccard': jaccardsim
         })
@@ -46,15 +53,3 @@ class Indexer:
                 map[word] += 1
 
         return map
-
-def process(parentLink, words, childLinks):
-    indexer = Indexer()
-    wordCountMap = indexer.wordCount(words)
-
-    for word in wordCountMap:
-        print "({}, {})".format(word, wordCountMap[word])
-
-    cossim = indexer.preprocessCosSim(wordCountMap)
-    jaccardsim = indexer.preprocessJaccardSim(wordCountMap)
-
-    indexer.saveData(parentLink, wordCountMap, cossim, jaccardsim)

@@ -7,8 +7,12 @@ class DBManager:
         self.collection = collection
 
     def insert(self, data):
-        collection = db[self.collection]
-        collection.insert_one(data)
+        url = data['url']
+        if self.findRecord({'url': url}) != None:
+            self.update({'url': url}, data)
+        else:
+            collection = db[self.collection]
+            collection.insert_one(data)
 
     def findRecord(self, parameter):
         collection = db[self.collection]
@@ -27,7 +31,7 @@ class DBManager:
         record = collection.find_one(condition)
         for key in data:
             record[key] = data[key]
-        return self.collection.update(condition, record)
+        return collection.update(condition, record)
 
 
 
