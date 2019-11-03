@@ -11,7 +11,7 @@ class Crawler:
         self.parent = []
         self.children = []
 
-        link = "http://www.cse.ust.hk/ug/comp1991"
+        link = "http://www.cse.ust.hk/"
 
         self.parent.append(link)
 

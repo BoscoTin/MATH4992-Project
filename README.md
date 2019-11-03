@@ -27,7 +27,7 @@ Tentative approaches:
 ---
 
 ### Schedule
-This week: Implement Crawler, design math formula on efficiency approach
+This week: Implement Retriever and Ranker, investigate LSI, word movers and variational auto encoder
 
 ---
 
@@ -41,3 +41,8 @@ Follow the commands here:
 `sudo pip install bs4`
 
 `sudo pip install requests`
+
+`sudo pip install mongodb`
+
+Homebrew dependency:
+`brew install mongodb`

@@ -1,11 +1,19 @@
 import math
+import DBManager
 
 class Indexer:
     # TODO: get database db here
     def __init__(self):
-        self.wordcount = 0
-        self.PRmatrix = 0
+        self.wordcountdb = DBManager.instance('wordcount')
+        self.PRmatrixdb = DBManager.instance('PRMatrix')
 
+    def saveData(self, link, wordcount, cossim, jaccardsim):
+        self.wordcountdb.insert({
+            'url': link,
+            #'words': wordcount,
+            'cos': cossim,
+            'jaccard': jaccardsim
+        })
 
     # words is a dict()
     # return document length (vector length)
@@ -49,5 +57,4 @@ def process(parentLink, words, childLinks):
     cossim = indexer.preprocessCosSim(wordCountMap)
     jaccardsim = indexer.preprocessJaccardSim(wordCountMap)
 
-    print cossim
-    print jaccardsim
+    indexer.saveData(parentLink, wordCountMap, cossim, jaccardsim)
