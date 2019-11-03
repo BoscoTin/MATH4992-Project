@@ -8,6 +8,22 @@ class Processor:
             i += 1
         return links
 
+    def waiveUnrelatedDomain(self, links):
+        # Waive all the link which are not in .ust.hk domain
+        processedLinks = []
+        i = 0
+        while i < len(links):
+            j = 0
+            count = 0
+            while j < len(links[i]):
+                if links[i][j:j+1] == "/" and count == 2:
+                    if links[i][j - 7:j] == "ust.hk/":
+                        processedLinks.append(links[i])
+                elif links[i][j:j+1] == "/" and count < 2:
+                    count += 1
+                    j += 1
+        return processedLinks
+
     def clearSubfix(self, links):
         # As links may have /index.html, /# , / at the end
         # all are the same link
