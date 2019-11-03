@@ -1,5 +1,18 @@
 class Processor:
 
+    def startWithParents(self, parent, links):
+        processedLinks = []
+        for link in links:
+            if link[0:1] == "/":
+                if parent[(len(parent)-1):] != "/":
+                    processedLinks.append(parent + link)
+                else:
+                    processedLinks.append(parent + link[1:])
+            else:
+                processedLinks.append(link)
+
+        return processedLinks
+
     def changeUrl(self, links):
         i = 0
         while i < len(links):
@@ -13,7 +26,7 @@ class Processor:
         processedLinks = []
         i = 0
         while i < len(links):
-            if "ust.hk" in links[i]:
+            if "cse.ust.hk" in links[i] and "http" == links[i][0:4]:
                 processedLinks.append(links[i])
             i += 1
         return processedLinks
@@ -40,7 +53,7 @@ class Processor:
         processedLinks = []
         i = 0
         while i < len(links):
-            if ".pdf" not in links[i] and ".png" not in links[i] and ".jpg" not in links[i]:
+            if ".pdf" not in links[i] and ".png" not in links[i] and ".jpg" not in links[i] and ".mp4" not in links[i] and "?" not in links[i]:
                 processedLinks.append(links[i])
             i += 1
         return processedLinks
@@ -48,16 +61,9 @@ class Processor:
     def clearDuplicate(self, links):
         # clear the duplicate links here
         processedLinks = []
+        annoying = ""
         for url in links:
-            if url not in processedLinks:
+            annoying = url + "/"
+            if url not in processedLinks and annoying not in processedLinks:
                 processedLinks.append(url)
         return processedLinks
-
-
-def process(links):
-    processor = Processor()
-    processedLinks = processor.clearUnwantedFiles(links)
-    processedLinks = processor.clearSubfix(processedLinks)
-    result = processor.clearDuplicate(processedLinks)
-
-    return result

@@ -1,6 +1,6 @@
 import requests, sys, re, string
 from bs4 import BeautifulSoup
-import Processor
+from Processor import Processor
 from Indexer import Indexer
 
 
@@ -10,57 +10,77 @@ class Crawler:
         self.num = numOfLayer;
         self.parent = []
         self.children = []
+        self.handled = []
         self.Indexer = Indexer()
+        self.Processor = Processor()
 
         link = "http://www.cse.ust.hk/"
 
         self.parent.append(link)
 
+    def handleLink(self, parent, links):
+        processedLinks = self.Processor.startWithParents(parent, links)
+        processedLinks = self.Processor.waiveUnrelatedDomain(processedLinks)
+        processedLinks = self.Processor.clearSubfix(processedLinks)
+        processedLinks = self.Processor.clearUnwantedFiles(processedLinks)
+        processedLinks = self.Processor.changeUrl(processedLinks)
+
+        return self.Processor.clearDuplicate(processedLinks)
+
     def getOnePage(self):
         parent = self.parent.pop(0)
-        print ""
-        print "Searching {}".format(parent)
-        request = requests.get(parent)
 
-        # check if the page can be connected successfully
-        if request.status_code == requests.codes.ok:
-            soup = BeautifulSoup(request.text, 'html.parser')
+        if parent not in self.handled:
+            self.handled.append(parent)
+            print ""
+            print "Searching {}".format(parent)
+            try:
+                request = requests.get(parent)
+                # check if the page can be connected successfully
+                if request.status_code == requests.codes.ok:
+                    soup = BeautifulSoup(request.text, 'html.parser')
 
-        # get raw text and split it
-        rawtags = soup.find_all('p')
-        temp = []
-        for tag in rawtags:
-            temp = temp + tag.getText().split()
+                    # get raw text and split it
+                    rawtags = soup.find_all('p')
+                    temp = []
+                    for tag in rawtags:
+                        temp = temp + tag.getText().split()
 
-        # replace punctuation by white space and split
-        words = []
-        for word in temp:
-            rawtext = word.encode('utf-8').strip()
-            for c in string.punctuation:
-                rawtext = rawtext.replace(c, " ")
-            words += rawtext.split()
+                    # replace punctuation by white space and split
+                    words = []
+                    for word in temp:
+                        rawtext = word.encode('utf-8').strip()
+                        for c in string.punctuation:
+                            rawtext = rawtext.replace(c, " ")
+                        words += rawtext.split()
 
-        # get all child links from the site
-        children = []
-        for link in soup.findAll('a', attrs={'href': re.compile("^http://")}):
-            children.append(link.get('href'))
+                    # get all child links from the site
+                    children = []
+                    for link in soup.findAll('a', href=True):
+                        children.append(link.get('href'))
 
-        #children = Processor.process(children)
-        for child in children:
-            print "{}".format(child)
-            self.children.append(child)
+                    children = self.handleLink(parent, children)
+                    for child in children:
+                        try:
+                            mynewstring = child.encode('ascii')
+                            print mynewstring
+                        except UnicodeEncodeError:
+                            print("there are non-ascii characters in there")
+                        self.children.append(child)
 
-        # give the data to indexer
-        self.Indexer.process(parent, words, children)
+                    # give the data to indexer
+                    self.Indexer.process(parent, words, children)
+
+            except requests.exceptions.ConnectionError:
+                print "Error in connecting the site."
+
 
     # search by BFS
     def scrape(self):
         for i in range(self.num):
+            self.parent = self.handleLink("", self.parent)
             print ""
             print "Searching layer {}".format(i)
-
-            # clear duplicate brought by multithread
-            #self.parent = Processor.process(self.parent)
 
             if (len(self.parent) == 0):
                 break
