@@ -11,7 +11,7 @@ class Crawler:
         self.parent = []
         self.children = []
 
-        link = "https://www.cse.ust.hk/ug/comp1991"
+        link = "http://www.cse.ust.hk/ug/comp1991"
 
         self.parent.append(link)
 
@@ -31,6 +31,7 @@ class Crawler:
         for tag in rawtags:
             temp = temp + tag.getText().split()
 
+        # replace punctuation by white space and split
         words = []
         for word in temp:
             rawtext = word.encode('utf-8').strip()
