@@ -25,7 +25,7 @@ class Ranker:
         if docLength != 0:
             return innerProduct / (docLength * math.sqrt(self.queryLen))
         else:
-            return 0
+            return 0.0
 
     # calculate jaccardsim of single document here
     def jaccardSimilarity(self, wordcount, docLength):
@@ -36,5 +36,6 @@ class Ranker:
             if key in wordcount:
                 innerProduct += wordcount[key] * 1
 
+
         # return jaccard similarity
-        return innerProduct / (docLength + self.queryLen + innerProduct)
+        return (innerProduct / (docLength + self.queryLen + innerProduct))
