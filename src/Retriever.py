@@ -16,10 +16,12 @@ def rank(option, keywords):
 
     for instance in all:
         score = dict()
-        # print "{}".format(instance['url'])
+
+        wordlist = instance['words']
+
         score['url'] = instance['url']
-        score['cos'] = ranker.cosineSimilarity(instance['words'], instance['cos'])
-        score['jac'] = ranker.jaccardSimilarity(instance['words'], instance['jaccard'])
+        score['cos'] = ranker.cosineSimilarity(wordlist, instance['cos'])
+        score['jac'] = ranker.jaccardSimilarity(wordlist, instance['jaccard'])
 
         docs_scores.append(score)
 
