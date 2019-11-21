@@ -66,7 +66,7 @@ def main():
     Porter = PorterStemmer()
     processedWords = []
     for word in keywords:
-        processedWords.appenr(Porter.stem(word))
+        processedWords.append(Porter.stem(word))
 
     scores = rank(option, processedWords)
 

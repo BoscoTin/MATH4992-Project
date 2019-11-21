@@ -21,7 +21,8 @@ class Indexer:
             'words': wordCountMap,
             'cos': cossim,
             'jaccard': jaccardsim,
-            'vae': vaesum
+            'vae': vaesum,
+            'children': childLinks
         })
 
     # words is a dict()

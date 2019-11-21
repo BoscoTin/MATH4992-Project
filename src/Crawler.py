@@ -2,6 +2,7 @@ import requests, sys, re, string
 from bs4 import BeautifulSoup
 from Processor import Processor
 from Indexer import Indexer
+import string
 
 from nltk.stem import PorterStemmer
 
@@ -53,6 +54,7 @@ class Crawler:
                     words = []
                     for word in temp:
                         rawtext = word.encode('utf-8').strip()
+                        rawtext = "".join(i for i in rawtext if ord(i)<128)
                         for c in string.punctuation:
                             rawtext = rawtext.replace(c, " ")
                         words += rawtext.split()
@@ -62,8 +64,8 @@ class Crawler:
                     for word in words:
                         processedWords.append(self.Porter.stem(word))
 
-                    for word in processedWords:
-                        print word
+                    # for word in processedWords:
+                    #    print word
 
                     # get all child links from the site
                     children = []
