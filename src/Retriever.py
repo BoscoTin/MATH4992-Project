@@ -15,7 +15,6 @@ def rank(option, keywords):
 
     docs_scores = []
 
-
     for instance in all:
         score = dict()
 
