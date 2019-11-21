@@ -14,12 +14,15 @@ class Indexer:
         # pre-calculate the stuffs that independent of query
         cossim = self.preprocessCosSim(wordCountMap)
         jaccardsim = self.preprocessJaccardSim(wordCountMap)
+        vaesum = self.preprocessVAE(wordCountMap)
 
         self.wordcountdb.insert({
             'url': parentLink,
             'words': wordCountMap,
             'cos': cossim,
-            'jaccard': jaccardsim
+            'jaccard': jaccardsim,
+            'vae': vaesum,
+            'children': childLinks
         })
 
     # words is a dict()
@@ -36,6 +39,12 @@ class Indexer:
         sum = 0
         for key in words:
             sum += words[key]**2
+        return sum
+
+    def preprocessVAE(self, words):
+        sum = 0
+        for key in words:
+            sum += words[key]
         return sum
 
 

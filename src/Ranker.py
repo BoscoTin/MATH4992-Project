@@ -38,3 +38,17 @@ class Ranker:
 
         # return jaccard similarity
         return (ip / (docLength + self.queryLen + ip))
+
+     # calculate VAE of single document here
+    def variationalAutoEncoder(self, wordcount, docLength):
+        innerProduct = 0.0
+        # calculate inner product, d_ik * q_k
+        for key in self.query:
+            if key in wordcount:
+                innerProduct += wordcount[key] * 1
+
+        # return VAE similarity
+        if docLength != 0:
+            return innerProduct / docLength  # rC1 / nC1
+        else:
+            return 0.0

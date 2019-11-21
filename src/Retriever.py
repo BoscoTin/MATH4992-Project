@@ -3,6 +3,8 @@ import sys
 import DBManager
 from Ranker import Ranker
 
+from nltk.stem import PorterStemmer
+
 db = DBManager.instance('wordcount')
 
 # function to rank by search option
@@ -22,6 +24,7 @@ def rank(option, keywords):
         score['url'] = instance['url']
         score['cos'] = ranker.cosineSimilarity(wordlist, instance['cos'])
         score['jac'] = ranker.jaccardSimilarity(wordlist, instance['jaccard'])
+        score['vae'] = ranker.variationalAutoEncoder(wordlist, instance['vae'])
 
         docs_scores.append(score)
 
@@ -60,7 +63,12 @@ def main():
     print "Type in the search keywords"
     keywords = raw_input().split()
 
-    scores = rank(option, keywords)
+    Porter = PorterStemmer()
+    processedWords = []
+    for word in keywords:
+        processedWords.append(Porter.stem(word))
+
+    scores = rank(option, processedWords)
 
     custom_print(option, scores)
 
