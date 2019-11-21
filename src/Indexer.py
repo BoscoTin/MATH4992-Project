@@ -4,7 +4,6 @@ import DBManager
 class Indexer:
     def __init__(self):
         self.wordcountdb = DBManager.instance('wordcount')
-        self.PRmatrixdb = DBManager.instance('PRMatrix')
 
     # main program here
     def process(self, parentLink, words, childLinks):
