@@ -24,6 +24,7 @@ def rank(option, keywords):
         score['url'] = instance['url']
         score['cos'] = ranker.cosineSimilarity(wordlist, instance['cos'])
         score['jac'] = ranker.jaccardSimilarity(wordlist, instance['jaccard'])
+        score['vae'] = ranker.variationalAutoEncoder(wordlist, instance['vae'])
 
         docs_scores.append(score)
 
