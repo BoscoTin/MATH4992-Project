@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from Processor import Processor
 from Indexer import Indexer
 
+from nltk.stem import PorterStemmer
+
 
 class Crawler:
 
@@ -13,6 +15,7 @@ class Crawler:
         self.handled = []
         self.Indexer = Indexer()
         self.Processor = Processor()
+        self.Porter = PorterStemmer()
 
         link = "http://www.cse.ust.hk/"
 
@@ -54,6 +57,14 @@ class Crawler:
                             rawtext = rawtext.replace(c, " ")
                         words += rawtext.split()
 
+                    # process the words
+                    processedWords = []
+                    for word in words:
+                        processedWords.append(self.Porter.stem(word))
+
+                    for word in processedWords:
+                        print word
+
                     # get all child links from the site
                     children = []
                     for link in soup.findAll('a', href=True):
@@ -69,7 +80,7 @@ class Crawler:
                         self.children.append(child)
 
                     # give the data to indexer
-                    self.Indexer.process(parent, words, children)
+                    self.Indexer.process(parent, processedWords, children)
 
             except requests.exceptions.ConnectionError:
                 print "Error in connecting the site."
