@@ -82,7 +82,10 @@ class Crawler:
                         self.children.append(child)
 
                     # give the data to indexer
-                    self.Indexer.process(parent, processedWords, children)
+                    if len(processedWords) != 0:
+                        self.Indexer.process(parent, processedWords, children)
+                    else:
+                        print "The document contains no word"
 
             except requests.exceptions.ConnectionError:
                 print "Error in connecting the site."

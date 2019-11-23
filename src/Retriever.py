@@ -3,6 +3,7 @@ import sys
 import DBManager
 from Ranker import Ranker
 
+import time
 from nltk.stem import PorterStemmer
 
 db = DBManager.instance('wordcount')
@@ -12,8 +13,9 @@ def rank(option, keywords):
     all = db.getAll()
 
     ranker = Ranker(keywords)
-
     docs_scores = []
+
+    otime = time.time()
 
     for instance in all:
         score = dict()
@@ -21,21 +23,30 @@ def rank(option, keywords):
         wordlist = instance['words']
 
         score['url'] = instance['url']
-        score['cos'] = ranker.cosineSimilarity(wordlist, instance['cos'])
-        score['jac'] = ranker.jaccardSimilarity(wordlist, instance['jaccard'])
-        score['vae'] = ranker.variationalAutoEncoder(wordlist, instance['vae'])
+
+        # TODO: change to switch option
+        if option == 'cos':
+            score[option] = ranker.cosineSimilarity(wordlist, instance[option])
+        elif option == 'jac':
+            score[option] = ranker.jaccardSimilarity(wordlist, instance[option])
+        elif option == 'vae':
+            score[option] = ranker.variationalAutoEncoder(wordlist, instance[option])
+        else:
+            break
 
         docs_scores.append(score)
 
     sorted_scores = sorted(docs_scores, key=lambda i:i[option], reverse=True)
 
-    return sorted_scores
+    return (sorted_scores, time.time() - otime)
 
 
 def custom_print(option, scores):
+    print "Search results: (score, url)"
     for instance in scores:
         print "{}, {}".format(instance[option], instance['url'])
 
+    print " "
 
 
 def terminate():
@@ -67,10 +78,11 @@ def main():
     for word in keywords:
         processedWords.append(Porter.stem(word))
 
-    scores = rank(option, processedWords)
+    scores, usedTime = rank(option, processedWords)
 
     custom_print(option, scores)
 
+    print "The search takes {} ms".format(usedTime)
 
 if __name__ == "__main__":
     main()

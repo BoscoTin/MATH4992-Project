@@ -19,7 +19,7 @@ class Indexer:
             'url': parentLink,
             'words': wordCountMap,
             'cos': cossim,
-            'jaccard': jaccardsim,
+            'jac': jaccardsim,
             'vae': vaesum,
             'children': childLinks
         })
