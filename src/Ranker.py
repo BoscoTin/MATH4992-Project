@@ -52,3 +52,12 @@ class Ranker:
             return innerProduct / docLength  # rC1 / nC1
         else:
             return 0.0
+
+    # calculate PR similarity based on keywords
+    def pagerankSimilarity(self, wordcount, score):
+        contains = 0.0
+        for key in self.query:
+            if key in wordcount.keys():
+                contains += 1
+
+        return score * contains / self.queryLen

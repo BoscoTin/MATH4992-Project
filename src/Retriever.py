@@ -11,10 +11,11 @@ prdb = DBManager.instance('PRMatrix')
 
 # function to rank by search option
 def rank(option, keywords):
+    ranker = Ranker(keywords)
+
     if option != 'pr':
         all = db.getAll()
 
-        ranker = Ranker(keywords)
         docs_scores = []
 
         otime = time.time()
@@ -46,14 +47,18 @@ def rank(option, keywords):
         all = prdb.getAll()
         docs_scores = []
 
+        otime = time.time()
+
         for instance in all:
             score = dict()
             score['url'] = instance['url']
-            score[option] = instance['score']
+            record = db.findRecord({'url': score['url']})
+
+            score[option] = ranker.pagerankSimilarity(record['words'], instance['score'])
 
             docs_scores.append(score)
 
-        return (sorted(docs_scores, key=lambda i:i[option], reverse=True), 0.0)
+        return (sorted(docs_scores, key=lambda i:i[option], reverse=True), time.time() - otime)
 
 def custom_print(option, scores):
     print "Search results: (score, url)"
@@ -61,6 +66,7 @@ def custom_print(option, scores):
         print "{}, {}".format(instance[option], instance['url'])
 
     print " "
+    print "Total webpages: {}".format(len(scores))
 
 
 def terminate():
