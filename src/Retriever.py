@@ -3,40 +3,70 @@ import sys
 import DBManager
 from Ranker import Ranker
 
+import time
 from nltk.stem import PorterStemmer
 
 db = DBManager.instance('wordcount')
+prdb = DBManager.instance('PRMatrix')
 
 # function to rank by search option
 def rank(option, keywords):
-    all = db.getAll()
-
     ranker = Ranker(keywords)
 
-    docs_scores = []
+    if option != 'pr':
+        all = db.getAll()
 
+        docs_scores = []
 
-    for instance in all:
-        score = dict()
+        otime = time.time()
 
-        wordlist = instance['words']
+        for instance in all:
+            score = dict()
 
-        score['url'] = instance['url']
-        score['cos'] = ranker.cosineSimilarity(wordlist, instance['cos'])
-        score['jac'] = ranker.jaccardSimilarity(wordlist, instance['jaccard'])
-        score['vae'] = ranker.variationalAutoEncoder(wordlist, instance['vae'])
+            wordlist = instance['words']
 
-        docs_scores.append(score)
+            score['url'] = instance['url']
 
-    sorted_scores = sorted(docs_scores, key=lambda i:i[option], reverse=True)
+            # TODO: change to switch option
+            if option == 'cos':
+                score[option] = ranker.cosineSimilarity(wordlist, instance[option])
+            elif option == 'jac':
+                score[option] = ranker.jaccardSimilarity(wordlist, instance[option])
+            elif option == 'vae':
+                score[option] = ranker.variationalAutoEncoder(wordlist, instance[option])
+            else:
+                break
 
-    return sorted_scores
+            docs_scores.append(score)
 
+        sorted_scores = sorted(docs_scores, key=lambda i:i[option], reverse=True)
+
+        return (sorted_scores, time.time() - otime)
+
+    else:
+        all = prdb.getAll()
+        docs_scores = []
+
+        otime = time.time()
+
+        for instance in all:
+            score = dict()
+            score['url'] = instance['url']
+            record = db.findRecord({'url': score['url']})
+
+            score[option] = ranker.pagerankSimilarity(record['words'], instance['score'])
+
+            docs_scores.append(score)
+
+        return (sorted(docs_scores, key=lambda i:i[option], reverse=True), time.time() - otime)
 
 def custom_print(option, scores):
+    print "Search results: (score, url)"
     for instance in scores:
         print "{}, {}".format(instance[option], instance['url'])
 
+    print " "
+    print "Total webpages: {}".format(len(scores))
 
 
 def terminate():
@@ -46,7 +76,7 @@ def terminate():
     print "     cos: cosine similarity measure"
     print "     jac: jaccard similarity measure"
     print "     vae: variational auto encoder measure"
-
+    print "     pr: page rank measure"
 
 def main():
     argv = sys.argv
@@ -54,7 +84,7 @@ def main():
     if "-option" in argv:
         index = argv.index("-option")
         option = argv[index + 1]
-        if option != 'cos' and option != 'jac' and option != 'vae':
+        if option != 'cos' and option != 'jac' and option != 'vae' and option != 'pr':
             terminate()
     else:
         terminate()
@@ -68,10 +98,11 @@ def main():
     for word in keywords:
         processedWords.append(Porter.stem(word))
 
-    scores = rank(option, processedWords)
+    scores, usedTime = rank(option, processedWords)
 
     custom_print(option, scores)
 
+    print "The search takes {} ms".format(usedTime)
 
 if __name__ == "__main__":
     main()
