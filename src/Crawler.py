@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from Processor import Processor
 from Indexer import Indexer
 import string
+import DBManager
+db = DBManager.instance('wordcount')
 
 from nltk.stem import PorterStemmer
 
@@ -34,7 +36,7 @@ class Crawler:
     def getOnePage(self):
         parent = self.parent.pop(0)
 
-        if parent not in self.handled:
+        if parent not in self.handled and db.findRecord({'url': parent}) == None:
             self.handled.append(parent)
             print ""
             print "Searching {}".format(parent)
@@ -104,7 +106,7 @@ class Crawler:
             for i in range(len(self.parent)):
                 self.getOnePage()
 
-            self.parent = self.children
+            self.parent = self.Processor.clearDuplicate(self.children)
             self.children = []
 # Class Crawler ends
 

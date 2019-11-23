@@ -3,7 +3,7 @@ import Retriever
 import DBManager
 
 option = 'pr'
-desiredPage = 'http://www.cse.ust.hk'
+desiredPage = 'http://www.cse.ust.hk/'
 
 db = DBManager.instance('wordcount')
 record = db.findRecord({'url': desiredPage})
