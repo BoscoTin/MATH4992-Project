@@ -85,7 +85,7 @@ def terminate():
     print "     jac: jaccard similarity measure"
     print "     vae: variational auto encoder measure"
     print "     pr: page rank measure"
-
+    sys.exit()
 
 
 def main():
