@@ -38,14 +38,17 @@ class Processor:
     def clearUnwantedFiles(self, links):
         # limit the file such that no .pdf, no .png, no .jpg can be placed
         processedLinks = []
-        filetypes = [".pdf", ".png", ".svg", ".ai", ".wav", ".mp3", ".mp4", ".wmv", ".avi", ".bmp", ".jpg", ".jpeg", "#", ".ppt", ".xls", ".doc", ".bib", ".cgi"]
+        filetypes = [".pdf", ".png", ".svg", ".ps", ".ai", ".wav", ".mp3", ".mp4", ".wmv", ".avi", ".bmp", ".jpg", ".jpeg", "#", ".ppt", ".xls", ".doc", ".bib", ".cgi"]
         i = 0
         while i < len(links):
             link = links[i].lower()
+            isDelete = False
             for file in filetypes:
                 if file in link:
-                    continue
-            processedLinks.append(links[i])
+                    isDelete = True
+                    break
+            if isDelete != True:
+                processedLinks.append(links[i])
             i += 1
         return processedLinks
 
