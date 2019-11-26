@@ -37,7 +37,6 @@ class Crawler:
         parent = self.parent.pop(0)
 
         if parent not in self.handled and db.findRecord({'url': parent}) == None:
-            self.handled.append(parent)
             print ""
             print "Searching {}".format(parent)
             try:
@@ -91,6 +90,8 @@ class Crawler:
 
             except requests.exceptions.ConnectionError:
                 print "Error in connecting the site."
+
+        self.handled.append(parent)
 
 
     # search by BFS
