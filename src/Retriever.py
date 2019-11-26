@@ -53,9 +53,8 @@ def rank(option, keywords):
         for instance in all:
             score = dict()
             score['url'] = instance['url']
-            record = db.findRecord({'url': score['url']})
 
-            score[option] = ranker.pagerankSimilarity(record['words'], instance['score'])
+            score[option] = ranker.pagerankSimilarity(instance['words'], instance['score'])
 
             docs_scores.append(score)
 
