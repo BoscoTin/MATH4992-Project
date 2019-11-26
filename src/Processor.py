@@ -53,7 +53,7 @@ class Processor:
         processedLinks = []
         i = 0
         while i < len(links):
-            if ".pdf" not in links[i] and ".png" not in links[i] and ".jpg" not in links[i] and ".mp4" not in links[i] and "?" not in links[i]:
+            if ".pdf" not in links[i].lower() and ".png" not in links[i].lower() and ".jpg" not in links[i].lower() and ".mp4" not in links[i].lower() and "?" not in links[i]:
                 processedLinks.append(links[i])
             i += 1
         return processedLinks
