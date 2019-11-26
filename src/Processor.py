@@ -1,5 +1,3 @@
-import re
-
 class Processor:
 
     def changeUrl(self, links):
@@ -15,7 +13,7 @@ class Processor:
         processedLinks = []
         i = 0
         while i < len(links):
-            if "cse.ust.hk" in links[i] and "http" == links[i][0:4]:
+            if "math.ust.hk" in links[i] and "http" == links[i][0:4]:
                 processedLinks.append(links[i])
             i += 1
         return processedLinks
@@ -40,10 +38,14 @@ class Processor:
     def clearUnwantedFiles(self, links):
         # limit the file such that no .pdf, no .png, no .jpg can be placed
         processedLinks = []
+        filetypes = [".pdf", ".png", ".svg", ".ai", ".wav", ".mp3", ".mp4", ".wmv", ".avi", ".bmp", ".jpg", ".jpeg", "#", ".ppt", ".xls", ".doc", ".bib", ".cgi"]
         i = 0
         while i < len(links):
-            if ".pdf" not in links[i].lower() and ".png" not in links[i].lower() and ".jpg" not in links[i].lower() and ".mp4" not in links[i].lower() and "?" not in links[i]:
-                processedLinks.append(links[i])
+            link = links[i].lower()
+            for file in filetypes:
+                if file in link:
+                    continue
+            processedLinks.append(links[i])
             i += 1
         return processedLinks
 
