@@ -36,21 +36,34 @@ class Crawler:
     def getOnePage(self):
         parent = self.parent.pop(0)
 
-        if parent not in self.handled and db.findRecord({'url': parent}) == None:
-            print ""
-            print "Searching {}".format(parent)
-            try:
-                request = requests.get(parent)
-                # check if the page can be connected successfully
-                if request.status_code == requests.codes.ok:
-                    soup = BeautifulSoup(request.text, 'html.parser')
+        print ""
+        print "Searching {}".format(parent)
+        try:
+            request = requests.get(parent)
+            # check if the page can be connected successfully
+            if request.status_code == requests.codes.ok:
+                soup = BeautifulSoup(request.text, 'html.parser')
+                # get all child links from the site
+                children = []
+                for link in soup.findAll('a', href=True):
+                    children.append(link.get('href'))
 
+                children = self.handleLink(parent, children)
+                for child in children:
+                    try:
+                        mynewstring = child.encode('ascii')
+                        print mynewstring
+                    except UnicodeEncodeError:
+                        print("there are non-ascii characters in there")
+                    self.children.append(child)
+
+                # words exist in database?
+                if parent not in self.handled:
                     # get raw text and split it
                     rawtags = soup.find_all('p')
                     temp = []
                     for tag in rawtags:
                         temp = temp + tag.getText().split()
-
                     # replace punctuation by white space and split
                     words = []
                     for word in temp:
@@ -59,43 +72,29 @@ class Crawler:
                         for c in string.punctuation:
                             rawtext = rawtext.replace(c, " ")
                         words += rawtext.split()
-
                     # process the words
                     processedWords = []
                     for word in words:
                         processedWords.append(self.Porter.stem(word))
-
-                    # for word in processedWords:
-                    #    print word
-
-                    # get all child links from the site
-                    children = []
-                    for link in soup.findAll('a', href=True):
-                        children.append(link.get('href'))
-
-                    children = self.handleLink(parent, children)
-                    for child in children:
-                        try:
-                            mynewstring = child.encode('ascii')
-                            print mynewstring
-                        except UnicodeEncodeError:
-                            print("there are non-ascii characters in there")
-                        self.children.append(child)
-
                     # give the data to indexer
                     if len(processedWords) != 0:
                         self.Indexer.process(parent, processedWords, children)
                     else:
                         print "The document contains no word"
 
-            except requests.exceptions.ConnectionError:
-                print "Error in connecting the site."
+        except requests.exceptions.ConnectionError:
+            print "Error in connecting the site."
 
         self.handled.append(parent)
 
 
     # search by BFS
     def scrape(self):
+        all = db.getAll()
+        for instance in all:
+            self.handled.append(instance['url'])
+        print len(self.handled)
+
         for i in range(self.num):
             self.parent = self.handleLink("", self.parent)
             print ""
