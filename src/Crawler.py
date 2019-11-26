@@ -19,6 +19,7 @@ class Crawler:
         self.Indexer = Indexer()
         self.Processor = Processor()
         self.Porter = PorterStemmer()
+        self.db = []
 
         link = "http://www.cse.ust.hk/"
 
@@ -36,54 +37,55 @@ class Crawler:
     def getOnePage(self):
         parent = self.parent.pop(0)
 
-        print ""
-        print "Searching {}".format(parent)
-        try:
-            request = requests.get(parent)
-            # check if the page can be connected successfully
-            if request.status_code == requests.codes.ok:
-                soup = BeautifulSoup(request.text, 'html.parser')
-                # get all child links from the site
-                children = []
-                for link in soup.findAll('a', href=True):
-                    children.append(link.get('href'))
+        if parent not in self.handled:
+            print ""
+            print "Searching {}".format(parent)
+            try:
+                request = requests.get(parent)
+                # check if the page can be connected successfully
+                if request.status_code == requests.codes.ok:
+                    soup = BeautifulSoup(request.text, 'html.parser')
+                    # get all child links from the site
+                    children = []
+                    for link in soup.findAll('a', href=True):
+                        children.append(link.get('href'))
 
-                children = self.handleLink(parent, children)
-                for child in children:
-                    try:
-                        mynewstring = child.encode('ascii')
-                        print mynewstring
-                    except UnicodeEncodeError:
-                        print("there are non-ascii characters in there")
-                    self.children.append(child)
+                    children = self.handleLink(parent, children)
+                    for child in children:
+                        try:
+                            mynewstring = child.encode('ascii')
+                            print mynewstring
+                        except UnicodeEncodeError:
+                            print("there are non-ascii characters in there")
+                        self.children.append(child)
 
-                # words exist in database?
-                if parent not in self.handled:
-                    # get raw text and split it
-                    rawtags = soup.find_all('p')
-                    temp = []
-                    for tag in rawtags:
-                        temp = temp + tag.getText().split()
-                    # replace punctuation by white space and split
-                    words = []
-                    for word in temp:
-                        rawtext = word.encode('utf-8').strip()
-                        rawtext = "".join(i for i in rawtext if ord(i)<128)
-                        for c in string.punctuation:
-                            rawtext = rawtext.replace(c, " ")
-                        words += rawtext.split()
-                    # process the words
-                    processedWords = []
-                    for word in words:
-                        processedWords.append(self.Porter.stem(word))
-                    # give the data to indexer
-                    if len(processedWords) != 0:
-                        self.Indexer.process(parent, processedWords, children)
-                    else:
-                        print "The document contains no word"
+                    # words exist in database?
+                    if parent not in self.db:
+                        # get raw text and split it
+                        rawtags = soup.find_all('p')
+                        temp = []
+                        for tag in rawtags:
+                            temp = temp + tag.getText().split()
+                        # replace punctuation by white space and split
+                        words = []
+                        for word in temp:
+                            rawtext = word.encode('utf-8').strip()
+                            rawtext = "".join(i for i in rawtext if ord(i)<128)
+                            for c in string.punctuation:
+                                rawtext = rawtext.replace(c, " ")
+                            words += rawtext.split()
+                        # process the words
+                        processedWords = []
+                        for word in words:
+                            processedWords.append(self.Porter.stem(word))
+                        # give the data to indexer
+                        if len(processedWords) != 0:
+                            self.Indexer.process(parent, processedWords, children)
+                        else:
+                            print "The document contains no word"
 
-        except requests.exceptions.ConnectionError:
-            print "Error in connecting the site."
+            except requests.exceptions.ConnectionError:
+                print "Error in connecting the site."
 
         self.handled.append(parent)
 
@@ -92,7 +94,7 @@ class Crawler:
     def scrape(self):
         all = db.getAll()
         for instance in all:
-            self.handled.append(instance['url'])
+            self.db.append(instance['url'])
         print len(self.handled)
 
         for i in range(self.num):
@@ -106,7 +108,7 @@ class Crawler:
             for i in range(len(self.parent)):
                 self.getOnePage()
 
-            self.parent = self.Processor.clearDuplicate(self.children)
+            self.parent = self.children
             self.children = []
 # Class Crawler ends
 
