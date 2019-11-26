@@ -3,56 +3,48 @@
 ### Topic: PageRank
 ---
 
-### Scope 1: Improves accuracy by examining term similarity
-Tentative methods:
+### Improves accuracy by examining term similarity
+Investigation on these methods:
 1. Jaccard similarity
-2. Latent semantic indexing
-3. Word mover's distance
-4. Variational auto encoder
-5. Cosine similarity
+2. Variational auto encoder
+3. Cosine similarity
+4. Mix with PageRank
 
-### Scope 2: Improves efficiency by investigating how to fine the eigenvalue of PageRank matrix
-Tentative approaches:
-1. Dynamic systems
-2. Linear algebra
-3. Probabilistic point of view
----
-
-### Components
-1. Crawler to scrape the raw data from given webpages (90% completed)
-2. Database management system to store the data (divide into several parts to fit different methods) (90% completed)
-3. Ranker to work around with the data and calculate the values (20% completed)
-4. Retriever to retrieve the values (10% completed)
-5. Interface (0% completed)
 ---
 
 ### Schedule
-This week: Implement Retriever and Ranker, investigate LSI, word movers and variational auto encoder
+This week: Do testing on accuracy (by determining the rank) and complete the report
 
 ---
 
-### Instruction to Andy
-Install BeautifulSoup and Requests for your python using pip, or else you cannot run.
+### Dependencies
+- Python 2.7
+- BeautifulSoup 4
+- Requests
+- MongoDB Community
+- Numpy
+- Scipy
+- Matplotlib
 
-Follow the commands here:
+---
 
-`sudo easy_install pip`
+### Command
+1. Crawling websites
+`python src/Crawler.py -n [integer]`
+As our program use BFS Searching on websites, the integer represents the number of layers that the program would search (that is the maximum distance between parent website and most bottom children website)
 
-`sudo pip install bs4`
+2. Compute PageRank
+`python src/ComputePR.py`
+If this is not run after Crawler, we can't do testing and retriving on data by `-option pr`
 
-`sudo pip install requests`
+3. Print all pages in database
+`python src/printAllPages.py`
+for debug purpose
 
-As our program use MongoDB to store the website data, please install the following dependency to prevent the error happens
+4. Single search with keyword input
+`python src/Retriever.py -option [parameter]`
+provided with four options: `cos` `jac` `vae` `pr`
 
-`sudo pip install mongodb`
-
-Homebrew dependency:
-`brew install mongodb-community`
-
-then
-
-`mkdir -p /data/db`
-
-``sudo chown -R `id -un` /data/db``
-
-run `mongod` to open MongoDB
+5. Testing program with plotting the graph
+`python src/test.py -option [parameter]`
+option same as above. This testing will make a regression curve on linear, cubic and quadratic
