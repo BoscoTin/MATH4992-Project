@@ -2,6 +2,7 @@ import requests, sys, re, string
 from bs4 import BeautifulSoup
 from Processor import Processor
 from Indexer import Indexer
+from urlparse import urljoin
 import string
 import DBManager
 db = DBManager.instance('wordcount')
@@ -25,9 +26,8 @@ class Crawler:
 
         self.parent.append(link)
 
-    def handleLink(self, parent, links):
-        processedLinks = self.Processor.startWithParents(parent, links)
-        processedLinks = self.Processor.waiveUnrelatedDomain(processedLinks)
+    def handleLink(self, links):
+        processedLinks = self.Processor.waiveUnrelatedDomain(links)
         processedLinks = self.Processor.clearSubfix(processedLinks)
         processedLinks = self.Processor.clearUnwantedFiles(processedLinks)
         processedLinks = self.Processor.changeUrl(processedLinks)
@@ -48,9 +48,9 @@ class Crawler:
                     # get all child links from the site
                     children = []
                     for link in soup.findAll('a', href=True):
-                        children.append(link.get('href'))
+                        children.append( urljoin( parent, link.get('href') ) )
 
-                    children = self.handleLink(parent, children)
+                    children = self.handleLink(children)
                     for child in children:
                         try:
                             mynewstring = child.encode('ascii')
@@ -98,7 +98,7 @@ class Crawler:
         print len(self.handled)
 
         for i in range(self.num):
-            self.parent = self.handleLink("", self.parent)
+            self.parent = self.handleLink(self.parent)
             print ""
             print "Searching layer {}".format(i)
 
