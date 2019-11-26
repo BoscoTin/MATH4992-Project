@@ -1,17 +1,6 @@
+import re
+
 class Processor:
-
-    def startWithParents(self, parent, links):
-        processedLinks = []
-        for link in links:
-            if link[0:1] == "/":
-                if parent[(len(parent)-1):] != "/":
-                    processedLinks.append(parent + link)
-                else:
-                    processedLinks.append(parent + link[1:])
-            else:
-                processedLinks.append(link)
-
-        return processedLinks
 
     def changeUrl(self, links):
         i = 0
