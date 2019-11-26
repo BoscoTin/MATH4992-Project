@@ -13,7 +13,8 @@ prdb = DBManager.instance('PRMatrix')
 def rank(option, keywords):
     ranker = Ranker(keywords)
 
-    if option != 'pr':
+    # if option is not page rank and mix
+    if option != 'pr' and 'mix' not in option:
         all = db.getAll()
 
         docs_scores = []
@@ -43,7 +44,7 @@ def rank(option, keywords):
 
         return (sorted_scores, time.time() - otime)
 
-    else:
+    elif option == 'pr':
         all = prdb.getAll()
         docs_scores = []
 
@@ -52,14 +53,20 @@ def rank(option, keywords):
         for instance in all:
             score = dict()
             score['url'] = instance['url']
-            record = db.findRecord({'url': score['url']})
 
-            score[option] = ranker.pagerankSimilarity(record['words'], instance['score'])
+            score[option] = ranker.pagerankSimilarity(instance['words'], instance['score'])
 
             docs_scores.append(score)
 
         return (sorted(docs_scores, key=lambda i:i[option], reverse=True), time.time() - otime)
 
+    elif option == 'mix':
+        return ([], 0.0)
+
+
+
+
+# here is for printing
 def custom_print(option, scores):
     print "Search results: (score, url)"
     for instance in scores:
@@ -77,6 +84,8 @@ def terminate():
     print "     jac: jaccard similarity measure"
     print "     vae: variational auto encoder measure"
     print "     pr: page rank measure"
+    sys.exit()
+
 
 def main():
     argv = sys.argv

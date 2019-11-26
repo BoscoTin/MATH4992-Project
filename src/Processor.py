@@ -64,6 +64,7 @@ class Processor:
         annoying = ""
         for url in links:
             annoying = url + "/"
-            if url not in processedLinks and annoying not in processedLinks:
+            annoying2 = url[:-1]
+            if url not in processedLinks and annoying not in processedLinks and annoying2 not in processedLinks:
                 processedLinks.append(url)
         return processedLinks

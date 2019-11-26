@@ -60,14 +60,23 @@ def pageRank(G, s = .85, maxerr = .0001):
 if __name__=='__main__':
     # array storing links in database
     links = []
+    wcs = []
     all = wordcountdb.getAll()
 
     toDict = []
 
     # append all links
     for instance in all:
-        element = dict()
         links.append(instance['url'])
+
+        component = dict()
+        component['url'] = instance['url']
+        component['words'] = instance['words']
+
+        wcs.append(component)
+
+        element = dict()
+
         element['url'] = instance['url']
         element['children'] = instance['children']
 
@@ -76,6 +85,7 @@ if __name__=='__main__':
     # sort
     links = sorted(links)
     sorted_all = sorted(toDict, key=lambda i:i['url'])
+    wcsorted = sorted(wcs, key=lambda i:i['url'])
 
     PRArray = []
     for instance in sorted_all:
@@ -91,8 +101,6 @@ if __name__=='__main__':
                 continue
         PRArray.append(linkToArray)
 
-    for element in PRArray:
-        print element
 
     num_results =  pageRank(PRArray,s=.86)
     i = 0
@@ -100,6 +108,7 @@ if __name__=='__main__':
         print "{}, {}".format(links[i], num_results[i])
         PRdb.insert({
             'url': links[i],
-            'score': num_results[i]
+            'score': num_results[i],
+            'words': wcsorted[i]['words']
         })
         i += 1
