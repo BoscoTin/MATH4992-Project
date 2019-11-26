@@ -22,8 +22,7 @@ class Crawler:
         self.Porter = PorterStemmer()
         self.db = []
 
-        link = "http://www.cse.ust.hk/"
-
+        link = "http://www.math.ust.hk/"
         self.parent.append(link)
 
     def handleLink(self, links):
