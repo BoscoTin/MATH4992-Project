@@ -42,24 +42,24 @@ def rank(option, keywords):
             docs_scores.append(score)
     else:
         coss = []
-        jacs = []
-        vaes = []
+        # jacs = []
+        # vaes = []
         prs = []
 
         for instance in all:
             wordlist = instance['words']
-            for opt in ['cos', 'jac', 'vae', 'pr']:
+            for opt in ['cos', 'pr']:
                 score = dict()
                 score['url'] = instance['url']
                 if opt == 'cos':
                     score['score'] = ranker.cosineSimilarity(wordlist, instance[opt])
                     coss.append(score)
-                elif opt == 'jac':
-                    score['score'] = ranker.jaccardSimilarity(wordlist, instance[opt])
-                    jacs.append(score)
-                elif opt == 'vae':
-                    score['score'] = ranker.variationalAutoEncoder(wordlist, instance[opt])
-                    vaes.append(score)
+                # elif opt == 'jac':
+                #     score['score'] = ranker.jaccardSimilarity(wordlist, instance[opt])
+                #     jacs.append(score)
+                # elif opt == 'vae':
+                #     score['score'] = ranker.variationalAutoEncoder(wordlist, instance[opt])
+                #     vaes.append(score)
                 elif opt == 'pr':
                     score['score'] = ranker.pagerankSimilarity(wordlist, instance[opt], instance['total'])
                     prs.append(score)
@@ -67,18 +67,20 @@ def rank(option, keywords):
                     break
 
         sorted_cos = sorted(coss, key=lambda i:i['score'], reverse=True)
-        sorted_jac = sorted(jacs, key=lambda i:i['score'], reverse=True)
-        sorted_vae = sorted(vaes, key=lambda i:i['score'], reverse=True)
+        sorted_jac = []
+        sorted_vae = []
+        # sorted_jac = sorted(jacs, key=lambda i:i['score'], reverse=True)
+        # sorted_vae = sorted(vaes, key=lambda i:i['score'], reverse=True)
         sorted_pr = sorted(prs, key=lambda i:i['score'], reverse=True)
 
 
         # normalize
         for instance in sorted_cos:
             instance['score'] = instance['score'] / sorted_cos[0]['score']
-        for instance in sorted_jac:
-            instance['score'] = instance['score'] / sorted_jac[0]['score']
-        for instance in sorted_vae:
-            instance['score'] = instance['score'] / sorted_vae[0]['score']
+        # for instance in sorted_jac:
+        #     instance['score'] = instance['score'] / sorted_jac[0]['score']
+        # for instance in sorted_vae:
+        #     instance['score'] = instance['score'] / sorted_vae[0]['score']
 
         # mix scores
         for instance in sorted_pr:

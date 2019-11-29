@@ -71,7 +71,7 @@ class Ranker:
                 contains += 1
 
         return (
-            Decimal(score) * Decimal( math.exp(contains) ) 
+            Decimal(score) * Decimal( math.exp(contains) )
         )
 
     # mix with pr
@@ -80,17 +80,17 @@ class Ranker:
 
         for i in coss:
             if i['url'] == url:
-                score = score * i['score']
+                score = score + i['score']
                 break
 
         # for i in jacs:
         #     if i['url'] == url:
-        #         score = score * i['score']
+        #         score = score + i['score']
         #         break
         #
         # for i in vaes:
         #     if i['url'] == url:
-        #         score = score * i['score']
+        #         score = score + i['score']
         #         break
 
         return score
