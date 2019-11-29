@@ -6,9 +6,13 @@ all = db.getAll()
 links = []
 
 for instance in all:
-    links.append(instance['url'])
+    print instance['url']
+    print instance['cos']
+    print instance['jac']
+    print instance['vae']
+    print instance['pr']
 
-sortedLinks = sorted(links)
+#sortedLinks = sorted(links)
 
-for link in sortedLinks:
-    print link
+#for link in sortedLinks:
+#    print link

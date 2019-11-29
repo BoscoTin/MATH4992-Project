@@ -6,7 +6,6 @@ import DBManager
 MAX_ITERATIONS = 1000
 
 wordcountdb = DBManager.instance('wordcount')
-PRdb = DBManager.instance('PRMatrix')
 
 def pageRank(G, s = .85, maxerr = .0001):
     """
@@ -60,7 +59,6 @@ def pageRank(G, s = .85, maxerr = .0001):
 if __name__=='__main__':
     # array storing links in database
     links = []
-    wcs = []
     all = wordcountdb.getAll()
 
     toDict = []
@@ -68,12 +66,6 @@ if __name__=='__main__':
     # append all links
     for instance in all:
         links.append(instance['url'])
-
-        component = dict()
-        component['url'] = instance['url']
-        component['words'] = instance['words']
-
-        wcs.append(component)
 
         element = dict()
 
@@ -85,7 +77,6 @@ if __name__=='__main__':
     # sort
     links = sorted(links)
     sorted_all = sorted(toDict, key=lambda i:i['url'])
-    wcsorted = sorted(wcs, key=lambda i:i['url'])
 
     PRArray = []
     for instance in sorted_all:
@@ -106,9 +97,12 @@ if __name__=='__main__':
     i = 0
     while i < len(num_results):
         print "{}, {}".format(links[i], num_results[i])
-        PRdb.insert({
-            'url': links[i],
-            'score': num_results[i],
-            'words': wcsorted[i]['words']
-        })
+        wordcountdb.update(
+            {
+                'url': links[i],
+            },
+            {
+                'pr': num_results[i]
+            }
+        )
         i += 1
