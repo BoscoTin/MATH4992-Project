@@ -13,14 +13,13 @@ prdb = DBManager.instance('PRMatrix')
 def rank(option, keywords):
     ranker = Ranker(keywords)
 
-    # if option is not page rank and mix
-    if 'mix' not in option:
-        all = db.getAll()
+    all = db.getAll()
 
-        docs_scores = []
+    docs_scores = []
 
-        otime = time.time()
+    otime = time.time()
 
+    if option != 'mix':
         for instance in all:
             score = dict()
 
@@ -36,19 +35,62 @@ def rank(option, keywords):
             elif option == 'vae':
                 score[option] = ranker.variationalAutoEncoder(wordlist, instance[option])
             elif option == 'pr':
-                score[option] = ranker.pagerankSimilarity(wordlist, instance[option])
+                score[option] = ranker.pagerankSimilarity(wordlist, instance[option], instance['total'])
             else:
                 break
 
             docs_scores.append(score)
+    else:
+        coss = []
+        jacs = []
+        vaes = []
+        prs = []
 
-        sorted_scores = sorted(docs_scores, key=lambda i:i[option], reverse=True)
+        for instance in all:
+            wordlist = instance['words']
+            for opt in ['cos', 'jac', 'vae', 'pr']:
+                score = dict()
+                score['url'] = instance['url']
+                if opt == 'cos':
+                    score['score'] = ranker.cosineSimilarity(wordlist, instance[opt])
+                    coss.append(score)
+                elif opt == 'jac':
+                    score['score'] = ranker.jaccardSimilarity(wordlist, instance[opt])
+                    jacs.append(score)
+                elif opt == 'vae':
+                    score['score'] = ranker.variationalAutoEncoder(wordlist, instance[opt])
+                    vaes.append(score)
+                elif opt == 'pr':
+                    score['score'] = ranker.pagerankSimilarity(wordlist, instance[opt], instance['total'])
+                    prs.append(score)
+                else:
+                    break
 
-        return (sorted_scores, time.time() - otime)
+        sorted_cos = sorted(coss, key=lambda i:i['score'], reverse=True)
+        sorted_jac = sorted(jacs, key=lambda i:i['score'], reverse=True)
+        sorted_vae = sorted(vaes, key=lambda i:i['score'], reverse=True)
+        sorted_pr = sorted(prs, key=lambda i:i['score'], reverse=True)
 
-    elif option == 'mix':
-        return ([], 0.0)
 
+        # normalize
+        for instance in sorted_cos:
+            instance['score'] = instance['score'] / sorted_cos[0]['score']
+        for instance in sorted_jac:
+            instance['score'] = instance['score'] / sorted_jac[0]['score']
+        for instance in sorted_vae:
+            instance['score'] = instance['score'] / sorted_vae[0]['score']
+
+        # mix scores
+        for instance in sorted_pr:
+            score = dict()
+            score['url'] = instance['url']
+            prscore = instance['score'] / sorted_pr[0]['score']
+            score[option] = ranker.mixSimilarity(instance['url'], prscore, sorted_cos, sorted_jac, sorted_vae)
+            docs_scores.append(score)
+
+    sorted_scores = sorted(docs_scores, key=lambda i:i[option], reverse=True)
+
+    return (sorted_scores, time.time() - otime)
 
 
 
@@ -79,7 +121,8 @@ def main():
     if "-option" in argv:
         index = argv.index("-option")
         option = argv[index + 1]
-        if option != 'cos' and option != 'jac' and option != 'vae' and option != 'pr':
+        options = ['cos', 'jac', 'vae', 'pr', 'mix']
+        if option not in options:
             terminate()
     else:
         terminate()
@@ -92,6 +135,7 @@ def main():
     processedWords = []
     for word in keywords:
         processedWords.append(Porter.stem(word))
+        print Porter.stem(word)
 
     scores, usedTime = rank(option, processedWords)
 

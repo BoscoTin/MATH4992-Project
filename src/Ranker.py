@@ -1,5 +1,15 @@
 import math
 
+import operator as op
+from functools import reduce
+from decimal import Decimal
+
+def ncr(n, r):
+    r = min(r, n-r)
+    numer = reduce(op.mul, range(n, n-r, -1), 1)
+    denom = reduce(op.mul, range(1, r+1), 1)
+    return numer / denom
+
 class Ranker:
 
     # given a dict() object of query, store it as private member
@@ -23,9 +33,9 @@ class Ranker:
 
         # return cosine similarity
         if docLength != 0:
-            return innerProduct / (docLength * math.sqrt(self.queryLen))
+            return Decimal(innerProduct / (docLength * math.sqrt(self.queryLen)))
         else:
-            return 0.0
+            return Decimal(0.0)
 
     # calculate jaccardsim of single document here
     def jaccardSimilarity(self, wordcount, docLength):
@@ -37,7 +47,7 @@ class Ranker:
                 ip += wordcount[key]
 
         # return jaccard similarity
-        return (ip / (docLength + self.queryLen + ip))
+        return Decimal(ip / (docLength + self.queryLen + ip))
 
      # calculate VAE of single document here
     def variationalAutoEncoder(self, wordcount, docLength):
@@ -49,15 +59,38 @@ class Ranker:
 
         # return VAE similarity
         if docLength != 0:
-            return innerProduct / docLength  # rC1 / nC1
+            return Decimal(innerProduct / docLength)  # rC1 / nC1
         else:
-            return 0.0
+            return Decimal(0.0)
 
     # calculate PR similarity based on keywords
-    def pagerankSimilarity(self, wordcount, score):
-        contains = 0.0
+    def pagerankSimilarity(self, wordcount, score, total):
+        contains = 0
         for key in self.query:
             if key in wordcount.keys():
                 contains += 1
 
-        return score * contains / self.queryLen
+        return (
+            Decimal(score) * Decimal( math.exp(contains) ) 
+        )
+
+    # mix with pr
+    def mixSimilarity(self, url, prscore, coss, jacs, vaes):
+        score = prscore
+
+        for i in coss:
+            if i['url'] == url:
+                score = score * i['score']
+                break
+
+        # for i in jacs:
+        #     if i['url'] == url:
+        #         score = score * i['score']
+        #         break
+        #
+        # for i in vaes:
+        #     if i['url'] == url:
+        #         score = score * i['score']
+        #         break
+
+        return score
