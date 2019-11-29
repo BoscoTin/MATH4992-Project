@@ -7,17 +7,19 @@ argv = sys.argv
 if "-option" in argv:
     index = argv.index("-option")
     option = argv[index + 1]
-    if option != 'cos' and option != 'jac' and option != 'vae' and option != 'pr':
+    options = ['cos', 'jac', 'vae', 'pr', 'mix']
+    if option not in options:
         print "Option lists: cos jac vae pr"
         print "with tag -option"
         sys.exit()
 else:
-    print "Option lists: cos jac vae pr"
+    print "Option lists: cos jac vae pr mix"
     print "with tag -option"
     sys.exit()
 
-
-desiredPage = 'http://www.cse.ust.hk/'
+MAX_NUM_KEYWORDS = 32
+SEARCH_TIMES = 100
+desiredPage = 'http://www.cse.ust.hk/pg/research/projects/dyyeung/ml-ed/'
 
 # get all words from desired webpages
 db = DBManager.instance('wordcount')
@@ -31,9 +33,13 @@ import time
 
 testRank = []
 times = time.time()
+
+if len(wordlist) < MAX_NUM_KEYWORDS:
+    MAX_NUM_KEYWORDS = len(wordlist)
+
 # 1 to 100
-for i in range(1, len(wordlist) + 1):
-    for j in range(20):
+for i in range(1, MAX_NUM_KEYWORDS + 1):
+    for j in range(SEARCH_TIMES):
         # do search with picking i keywords
         samples = random.sample(range(len(wordlist)), i)
         words = []
@@ -79,7 +85,7 @@ print r_value
 print p_value
 print std_err
 print ""
-print "Done with {} times search".format( len(wordlist) * 20 )
+print "Done with {} times search".format( MAX_NUM_KEYWORDS * SEARCH_TIMES )
 #print "Time elapsed = {} s".format( (time.time() - times) / 1000 )
 
 title = ""
@@ -91,6 +97,8 @@ elif option == 'vae':
     title = "Variational Auto Encoder"
 elif option == 'pr':
     title = "Page Rank"
+elif option == 'mix':
+    title = "Mixed formula"
 
 plt.title(title)
 # plt.plot(x,y, '.', label="original data")

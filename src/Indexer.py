@@ -21,6 +21,7 @@ class Indexer:
             'cos': cossim,
             'jac': jaccardsim,
             'vae': vaesum,
+            'total': len(words),
             'children': childLinks
         })
 
