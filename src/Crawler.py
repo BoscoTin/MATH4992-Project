@@ -22,7 +22,7 @@ class Crawler:
         self.Porter = PorterStemmer()
         self.db = []
 
-        link = "http://www.math.ust.hk/"
+        link = "http://www.cse.ust.hk/"
         self.parent.append(link)
 
     def handleLink(self, links):
@@ -40,7 +40,7 @@ class Crawler:
             print ""
             print "Searching {}".format(parent)
             try:
-                request = requests.get(parent)
+                request = requests.get(parent, timeout=20)
                 # check if the page can be connected successfully
                 if request.status_code == requests.codes.ok:
                     soup = BeautifulSoup(request.text, 'html.parser')
@@ -85,6 +85,8 @@ class Crawler:
 
             except requests.exceptions.ConnectionError:
                 print "Error in connecting the site."
+            except requests.exceptions.Timeout:
+                print "Timeout in connecting the site."
 
         self.handled.append(parent)
 

@@ -14,7 +14,7 @@ def rank(option, keywords):
     ranker = Ranker(keywords)
 
     # if option is not page rank and mix
-    if option != 'pr' and 'mix' not in option:
+    if 'mix' not in option:
         all = db.getAll()
 
         docs_scores = []
@@ -35,6 +35,8 @@ def rank(option, keywords):
                 score[option] = ranker.jaccardSimilarity(wordlist, instance[option])
             elif option == 'vae':
                 score[option] = ranker.variationalAutoEncoder(wordlist, instance[option])
+            elif option == 'pr':
+                score[option] = ranker.pagerankSimilarity(wordlist, instance[option])
             else:
                 break
 
@@ -43,22 +45,6 @@ def rank(option, keywords):
         sorted_scores = sorted(docs_scores, key=lambda i:i[option], reverse=True)
 
         return (sorted_scores, time.time() - otime)
-
-    elif option == 'pr':
-        all = prdb.getAll()
-        docs_scores = []
-
-        otime = time.time()
-
-        for instance in all:
-            score = dict()
-            score['url'] = instance['url']
-
-            score[option] = ranker.pagerankSimilarity(instance['words'], instance['score'])
-
-            docs_scores.append(score)
-
-        return (sorted(docs_scores, key=lambda i:i[option], reverse=True), time.time() - otime)
 
     elif option == 'mix':
         return ([], 0.0)

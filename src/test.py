@@ -17,7 +17,7 @@ else:
     sys.exit()
 
 
-desiredPage = 'http://www.cse.ust.hk/pg/research/projects/yqsong/robo-lawyer/'
+desiredPage = 'http://www.cse.ust.hk/'
 
 # get all words from desired webpages
 db = DBManager.instance('wordcount')
@@ -27,8 +27,10 @@ wordlist = record['words'].keys()
 
 # do testing, with each test 50 times
 import random
+import time
 
 testRank = []
+times = time.time()
 # 1 to 100
 for i in range(1, len(wordlist) + 1):
     for j in range(20):
@@ -39,7 +41,7 @@ for i in range(1, len(wordlist) + 1):
             words.append(wordlist[index])
 
         # get the rank here
-        scores, time = Retriever.rank(option, words)
+        scores, etime = Retriever.rank(option, words)
 
         rank = 0
         for score in scores:
@@ -48,6 +50,7 @@ for i in range(1, len(wordlist) + 1):
             rank += 1
 
         testRank.append( (i, rank + 1) )
+        print "{}, {}".format(i, rank + 1)
 
 # linear regression
 import numpy as np
@@ -75,6 +78,9 @@ print intercept
 print r_value
 print p_value
 print std_err
+print ""
+print "Done with {} times search".format( len(wordlist) * 20 )
+#print "Time elapsed = {} s".format( (time.time() - times) / 1000 )
 
 title = ""
 if option == 'cos':
