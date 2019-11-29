@@ -17,7 +17,7 @@ else:
     sys.exit()
 
 
-desiredPage = 'http://www.cse.ust.hk/pg/research/projects/yqsong/robo-lawyer/'
+desiredPage = 'http://www.cse.ust.hk/'
 
 # get all words from desired webpages
 db = DBManager.instance('wordcount')
@@ -50,6 +50,7 @@ for i in range(1, len(wordlist) + 1):
             rank += 1
 
         testRank.append( (i, rank + 1) )
+        print "{}, {}".format(i, rank + 1)
 
 # linear regression
 import numpy as np
