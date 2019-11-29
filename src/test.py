@@ -78,6 +78,8 @@ quadratic = np.polyfit(x,y,2)
 quad_trend = np.poly1d(quadratic)
 cubic = np.polyfit(x,y,3)
 cubic_trend = np.poly1d(cubic)
+polyic = np.polyfit(x,y,MAX_NUM_KEYWORDS)
+poly_trend = np.poly1d(polyic)
 
 print slope
 print intercept
@@ -105,5 +107,6 @@ plt.title(title)
 plt.plot(x, intercept + slope * x, 'r', label='linear regression')
 plt.plot(x, quad_trend(x), 'g', label='quadratic fit')
 plt.plot(x, cubic_trend(x), 'b', label='cubic fit')
+plt.plot(x, poly_trend(x), 'y', label='poly fit')
 plt.legend()
 plt.show()
