@@ -21,25 +21,25 @@ A python program to help the project calculations with hundred or thousand times
 
 ### Command
 
-1.	Crawling websites
+-	Crawling websites
 
 `python src/Crawler.py -n [integer]`
 
 As our program use BFS Searching on websites, the integer represents the number of layers that the program would search (that is the maximum distance between parent website and most bottom children website)
 
-1.	Compute PageRank
+-	Compute PageRank
 
 `python src/ComputePR.py`
 
 If this is not run after Crawler, we can't do testing and retriving on data by `-option pr`
 
-1.	Print all pages in database
+-	Print all pages in database
 
 `python src/printAllPages.py`
 
 for debug purpose
 
-1.	Single search with keyword input
+-	Single search with keyword input
 
 `python src/Retriever.py -option [parameter]`
 
@@ -47,7 +47,7 @@ provided with four options:
 
 `cos` `jac` `vae` `pr` `mix`
 
-1.	Testing program with plotting the graph
+-	Testing program with plotting the graph
 
 `python src/test.py -option [parameter]`
 
